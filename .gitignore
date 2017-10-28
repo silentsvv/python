@@ -1,0 +1,8 @@
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.project
+__pycache__/
