@@ -196,4 +196,4 @@ if __name__ == "__main__":
     # )
     #
     # db.session.add(admin)
-    # db.session.commit()
+    db.session.commit()
