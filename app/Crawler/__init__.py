@@ -25,8 +25,10 @@ def decodeHtml(html):
     global Current
     soup = BeautifulSoup(html, "html.parser")
     dic = {}
-    dic['title'] = soup.select('.lemmaWgt-lemmaTitle-title h1')[0].string
-    dic['intro'] = soup.select('[label-module=lemmaSummary]')[0].get_text()
+    if soup.select('.lemmaWgt-lemmaTitle-title h1').__len__() >= 0:
+        dic['title'] = soup.select('.lemmaWgt-lemmaTitle-title h1')[0].string
+    if soup.select('[label-module=lemmaSummary]').__len__() >= 0:
+        dic['intro'] = soup.select('[label-module=lemmaSummary]')[0].get_text()
     CrawInfo.append(dic)
     links = soup.select('a[href^="/item/"]')
     for link in links:
@@ -37,10 +39,19 @@ def decodeHtml(html):
         LinkArr = Current
         Current = set()
 
+    print(CrawInfo.__len__())
     newUrl = LinkArr.pop()
-    print(CrawInfo)
-    if CrawInfo.__len__() <= 10:
-        getWeb(newUrl)
+    if CrawInfo.__len__() <= 100:
+        try:
+            print('爬取成功')
+            getWeb(newUrl)
+        except Exception:
+            print('爬取出错啦, 跳过获取')
+            newUrl = LinkArr.pop()
+            getWeb(newUrl)
+    else:
+        with open('data.txt', 'w', encoding="utf-8") as f:
+            f.write(CrawInfo.__str__())
 
 
 if __name__ == "__main__":
