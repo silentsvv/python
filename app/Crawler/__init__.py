@@ -1,10 +1,13 @@
 from urllib import request;
 from bs4 import BeautifulSoup;
+import sqlite3;
 
 CrawInfo = []
 Current = set()
 LinkArr = set()
 OldArr = set()
+conn = sqlite3.connect('example.db')
+c = conn.cursor()
 
 def getWeb(url):
     open = request.Request(url)
@@ -55,6 +58,17 @@ def decodeHtml(html):
 
 
 if __name__ == "__main__":
-    url = 'https://baike.baidu.com/item/%E7%88%B1%E7%89%B9%E5%AE%89%E4%B8%BA/4734384?fr=aladdin'
-    getWeb(url)
+    tb_exists = "SELECT name FROM sqlite_master WHERE type='table' AND name='crawler'"
+    if not c.execute(tb_exists).fetchone():
+        c.execute('''CREATE TABLE crawler (
+            title text,
+            content text
+        )
+        ''')
+    c.execute("INSERT INTO crawler (title, content) values(?,?)", ('sssss', 'scccccccccccccccccccccccc'))
+    print(c.rowcount)
+
+    conn.commit()
+    # url = 'https://baike.baidu.com/item/%E7%88%B1%E7%89%B9%E5%AE%89%E4%B8%BA/4734384?fr=aladdin'
+    # getWeb(url)
     # decodeHtml()

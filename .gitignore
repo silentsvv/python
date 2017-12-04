@@ -4,5 +4,6 @@
 *.ntvs*
 *.njsproj
 *.sln
+venv/
 .project
 __pycache__/
