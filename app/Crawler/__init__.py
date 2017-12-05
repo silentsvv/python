@@ -28,11 +28,17 @@ def decodeHtml(html):
     global Current
     soup = BeautifulSoup(html, "html.parser")
     dic = {}
+
     if soup.select('.lemmaWgt-lemmaTitle-title h1').__len__() >= 0:
         dic['title'] = soup.select('.lemmaWgt-lemmaTitle-title h1')[0].string
     if soup.select('[label-module=lemmaSummary]').__len__() >= 0:
         dic['intro'] = soup.select('[label-module=lemmaSummary]')[0].get_text()
+
     CrawInfo.append(dic)
+
+    c.execute("INSERT INTO crawler (id, title, content) values(null,?,?)", (dic['title'], dic['intro']))
+    conn.commit()
+
     links = soup.select('a[href^="/item/"]')
     for link in links:
         Current.add('https://baike.baidu.com' + link['href'])
@@ -55,20 +61,21 @@ def decodeHtml(html):
     else:
         with open('data.txt', 'w', encoding="utf-8") as f:
             f.write(CrawInfo.__str__())
+            conn.close()
 
 
 if __name__ == "__main__":
     tb_exists = "SELECT name FROM sqlite_master WHERE type='table' AND name='crawler'"
+    c.executescript('drop table if exists crawler;')
+
     if not c.execute(tb_exists).fetchone():
         c.execute('''CREATE TABLE crawler (
+            id INTEGER PRIMARY KEY,
             title text,
             content text
         )
         ''')
-    c.execute("INSERT INTO crawler (title, content) values(?,?)", ('sssss', 'scccccccccccccccccccccccc'))
-    print(c.rowcount)
 
-    conn.commit()
-    # url = 'https://baike.baidu.com/item/%E7%88%B1%E7%89%B9%E5%AE%89%E4%B8%BA/4734384?fr=aladdin'
-    # getWeb(url)
+    url = 'https://baike.baidu.com/item/%E7%88%B1%E7%89%B9%E5%AE%89%E4%B8%BA/4734384?fr=aladdin'
+    getWeb(url)
     # decodeHtml()
